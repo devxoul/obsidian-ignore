@@ -1,36 +1,21 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from 'bun:test'
 
-import {
-  diffChanged,
-  mergeEntries,
-  recoverManual,
-  stripOnUnload,
-} from './vault-config'
+import { diffChanged, mergeEntries, recoverManual, stripOnUnload } from './vault-config'
 
 describe('vault config ownership logic', () => {
   describe('recoverManual', () => {
     it('removes last written plugin entries while preserving user order', () => {
-      expect(recoverManual(['userA', 'node_modules/', 'userB'], ['node_modules/'])).toEqual([
-        'userA',
-        'userB',
-      ])
+      expect(recoverManual(['userA', 'node_modules/', 'userB'], ['node_modules/'])).toEqual(['userA', 'userB'])
     })
 
     it('returns current entries unchanged when nothing was last written', () => {
-      expect(recoverManual(['userA', 'node_modules/', 'userB'], [])).toEqual([
-        'userA',
-        'node_modules/',
-        'userB',
-      ])
+      expect(recoverManual(['userA', 'node_modules/', 'userB'], [])).toEqual(['userA', 'node_modules/', 'userB'])
     })
   })
 
   describe('mergeEntries', () => {
     it('keeps manual entries first and skips duplicate computed entries', () => {
-      expect(mergeEntries(['userA'], ['node_modules/', 'userA'])).toEqual([
-        'userA',
-        'node_modules/',
-      ])
+      expect(mergeEntries(['userA'], ['node_modules/', 'userA'])).toEqual(['userA', 'node_modules/'])
     })
 
     it('returns computed entries when manual entries are empty', () => {
