@@ -23,6 +23,15 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
 
   async onload(): Promise<void> {
     await this.loadSettings()
+
+    try {
+      if (this.settings.enabled) {
+        applyExplorerHiding(this.lastWrittenPluginEntries, this.app.workspace.containerEl.ownerDocument)
+      }
+    } catch (error) {
+      console.error('Failed to apply initial explorer hiding', error)
+    }
+
     this.addSettingTab(new IgnoreSettingTab(this.app, this))
     this.addCommand({
       id: 'reload-obsidianignore',
@@ -33,7 +42,7 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
     })
 
     this.app.workspace.onLayoutReady(() => {
-      this.scheduleRecompute()
+      void this.recompute()
       this.registerInterval(
         window.setInterval(() => {
           void this.pollIgnoreFile()
