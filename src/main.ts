@@ -1,4 +1,4 @@
-import { Plugin, TFile } from 'obsidian'
+import { normalizePath, Plugin } from 'obsidian'
 
 import { compactToFolders, computeIgnored } from './ignore-engine'
 import { refreshViews } from './refreshers'
@@ -18,13 +18,26 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
   lastWrittenPluginEntries: string[] = []
   lastKnownManualEntries: string[] = []
   private recomputeTimer: number | undefined
+  private lastIgnoreText: string | undefined
 
   async onload(): Promise<void> {
     await this.loadSettings()
     this.addSettingTab(new IgnoreSettingTab(this.app, this))
+    this.addCommand({
+      id: 'reload-obsidianignore',
+      name: 'Reload .obsidianignore',
+      callback: () => {
+        void this.recompute()
+      },
+    })
 
     this.app.workspace.onLayoutReady(() => {
       this.scheduleRecompute()
+      this.registerInterval(
+        window.setInterval(() => {
+          void this.pollIgnoreFile()
+        }, 3000),
+      )
 
       this.registerEvent(
         this.app.vault.on('modify', (file) => {
@@ -51,6 +64,14 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
           this.scheduleRecompute()
         }),
       )
+
+      this.registerEvent(
+        this.app.vault.on('raw', (path) => {
+          if (normalizePath(path) === normalizePath(this.settings.ignoreFileName)) {
+            this.scheduleRecompute()
+          }
+        }),
+      )
     })
   }
 
@@ -75,6 +96,7 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
   async recompute(): Promise<void> {
     try {
       const patternText = this.settings.enabled ? await this.readIgnoreFile() : ''
+      this.lastIgnoreText = patternText
       const allPaths = this.app.vault.getFiles().map((file) => file.path)
       const ignored = this.settings.enabled ? computeIgnored(patternText, allPaths) : []
       const computed = this.settings.enabled ? compactToFolders(ignored, allPaths) : []
@@ -133,13 +155,27 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
   }
 
   private async readIgnoreFile(): Promise<string> {
-    const file = this.app.vault.getAbstractFileByPath(this.settings.ignoreFileName)
+    const path = normalizePath(this.settings.ignoreFileName)
 
-    if (file instanceof TFile) {
-      return this.app.vault.cachedRead(file)
+    try {
+      if (!(await this.app.vault.adapter.exists(path))) {
+        return ''
+      }
+
+      return await this.app.vault.adapter.read(path)
+    } catch (error) {
+      console.error('Failed to read ignore file', error)
+      return ''
     }
+  }
 
-    return ''
+  private async pollIgnoreFile(): Promise<void> {
+    const text = await this.readIgnoreFile()
+
+    if (text !== this.lastIgnoreText) {
+      this.lastIgnoreText = text
+      this.scheduleRecompute()
+    }
   }
 
   private readCurrentIgnoreFilters(): string[] {
