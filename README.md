@@ -27,8 +27,8 @@ list when disabled.
 
 ### From Obsidian Community Plugins
 
-Not yet available in the Community Plugins directory. Use Manual Installation below
-for now.
+Visit the [Obsidian Community Plugins page](https://community.obsidian.md/plugins/ignore)
+and click **Add to Obsidian**, then enable the plugin.
 
 ### Manual Installation
 
