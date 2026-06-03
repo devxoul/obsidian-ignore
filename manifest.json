@@ -1,7 +1,7 @@
 {
   "id": "ignore",
   "name": "Ignore",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minAppVersion": "1.0.0",
   "description": "Hide files matching an ignore file (gitignore syntax) from the file explorer, search, and graph.",
   "author": "Sisyphus",

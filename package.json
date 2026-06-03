@@ -1,6 +1,6 @@
 {
   "name": "obsidian-ignore",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hide files matching .obsidianignore (gitignore syntax) from the file explorer, search, and graph.",
   "keywords": [
     "gitignore",
