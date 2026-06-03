@@ -34,8 +34,8 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
 
     this.addSettingTab(new IgnoreSettingTab(this.app, this))
     this.addCommand({
-      id: 'reload-obsidianignore',
-      name: 'Reload .obsidianignore',
+      id: 'reload-hidden-file-rules',
+      name: 'Reload hidden file rules',
       callback: () => {
         void this.recompute()
       },

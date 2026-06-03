@@ -1,6 +1,6 @@
 {
-  "id": "obsidian-ignore",
-  "name": "Obsidian Ignore",
+  "id": "ignore",
+  "name": "Ignore",
   "version": "1.0.0",
   "minAppVersion": "1.0.0",
   "description": "Hide files matching .obsidianignore (gitignore syntax) from the Obsidian UI.",
