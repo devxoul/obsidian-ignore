@@ -32,11 +32,7 @@ export function buildHidingCss(entries: string[]): string {
 }
 
 export function cssString(value: string): string {
-  const escaped = value
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\A ')
-    .replace(/\r/g, '\\D ')
+  const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\A ').replace(/\r/g, '\\D ')
 
   return `"${escaped}"`
 }
