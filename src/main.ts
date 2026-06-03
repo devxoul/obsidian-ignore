@@ -1,5 +1,6 @@
 import { normalizePath, Plugin } from 'obsidian'
 
+import { applyExplorerHiding, removeExplorerHiding } from './explorer-hider'
 import { compactToFolders, computeIgnored } from './ignore-engine'
 import { refreshViews } from './refreshers'
 import { DEFAULT_SETTINGS, IgnoreSettingTab, type ObsidianIgnorePluginLike, type Settings } from './settings'
@@ -82,6 +83,12 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
     }
 
     try {
+      removeExplorerHiding(this.app.workspace.containerEl.ownerDocument)
+    } catch (error) {
+      console.error('Failed to remove explorer hiding', error)
+    }
+
+    try {
       const current = this.readCurrentIgnoreFilters()
       const manual = stripOnUnload(current, this.lastWrittenPluginEntries)
       this.app.vault.setConfig(USER_IGNORE_FILTERS, manual)
@@ -103,6 +110,8 @@ export default class ObsidianIgnorePlugin extends Plugin implements ObsidianIgno
       const current = this.readCurrentIgnoreFilters()
       const manual = recoverManual(current, this.lastWrittenPluginEntries)
       const merged = mergeEntries(manual, computed)
+
+      applyExplorerHiding(computed, this.app.workspace.containerEl.ownerDocument)
 
       if (
         !diffChanged(this.lastWrittenPluginEntries, computed) &&
