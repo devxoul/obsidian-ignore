@@ -2,15 +2,21 @@
   "name": "obsidian-ignore",
   "version": "1.0.0",
   "description": "Hide files matching .obsidianignore (gitignore syntax) from the Obsidian UI.",
-  "main": "main.js",
-  "type": "module",
+  "keywords": [
+    "gitignore",
+    "obsidian",
+    "obsidian-plugin"
+  ],
   "license": "MIT",
-  "keywords": ["obsidian", "obsidian-plugin", "gitignore"],
+  "type": "module",
+  "main": "main.js",
   "scripts": {
     "dev": "bun run esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && bun run esbuild.config.mjs production",
     "lint": "oxlint",
     "fmt": "oxfmt",
+    "format": "oxfmt --write",
+    "format:check": "oxfmt --check",
     "test": "bun test"
   },
   "dependencies": {
