@@ -23,9 +23,24 @@ Your own manually-added Excluded-files entries are preserved — the plugin only
 manages the entries it computes from `.obsidianignore`, and restores your manual
 list when disabled.
 
+## Installation
+
+### From Obsidian Community Plugins
+
+Not yet available in the Community Plugins directory. Use Manual Installation below
+for now.
+
+### Manual Installation
+
+1. Download `main.js` and `manifest.json` from the latest release.
+2. Create folder `<vault>/.obsidian/plugins/ignore/`.
+3. Copy the downloaded files into the folder.
+4. Reload Obsidian.
+5. Enable the plugin in Settings → Community Plugins.
+
 ## Usage
 
-1. Install and enable the plugin.
+1. Enable the plugin.
 2. Create a `.obsidianignore` file in your vault root.
 3. Add patterns:
 
