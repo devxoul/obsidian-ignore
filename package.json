@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "bun run esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && bun run esbuild.config.mjs production",
+    "typecheck": "tsc -noEmit -skipLibCheck",
     "lint": "oxlint",
     "fmt": "oxfmt",
     "format": "oxfmt --write",

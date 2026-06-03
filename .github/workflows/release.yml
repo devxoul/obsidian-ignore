@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (x.y.z)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Format check
+        run: bun run format:check
+
+      - name: Test
+        run: bun test
+
+      - name: Bump version
+        run: |
+          bun -e "
+            const fs = require('fs');
+            const v = '${{ inputs.version }}';
+            for (const f of ['package.json', 'manifest.json']) {
+              const c = JSON.parse(fs.readFileSync(f, 'utf8'));
+              c.version = v;
+              fs.writeFileSync(f, JSON.stringify(c, null, 2) + '\n');
+            }
+            const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+            const versions = JSON.parse(fs.readFileSync('versions.json', 'utf8'));
+            versions[v] = manifest.minAppVersion;
+            fs.writeFileSync('versions.json', JSON.stringify(versions, null, 2) + '\n');
+          "
+
+      - name: Build
+        run: bun run build
+
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json manifest.json versions.json
+          git diff --staged --quiet || git commit -m "${{ inputs.version }}"
+          git tag "${{ inputs.version }}"
+          git push origin HEAD --tags
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "${{ inputs.version }}" \
+            --title "${{ inputs.version }}" \
+            --generate-notes \
+            main.js manifest.json
+        env:
+          GH_TOKEN: ${{ github.token }}
