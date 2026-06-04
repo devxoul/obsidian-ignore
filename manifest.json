@@ -4,6 +4,7 @@
   "version": "1.0.1",
   "minAppVersion": "1.0.0",
   "description": "Hide files matching an ignore file (gitignore syntax) from the file explorer, search, and graph.",
-  "author": "Sisyphus",
+  "author": "Jeon Suyeol",
+  "authorUrl": "https://github.com/devxoul",
   "isDesktopOnly": false
 }
